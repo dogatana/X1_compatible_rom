@@ -1200,7 +1200,7 @@ IPLKEY_2:
 
         pop     bc
         ret
-IPLKEY_END
+IPLKEY_END:
 
 
 ; 80C49(サブCPU)の書込み可能待ち (アドレス変えてもよい)
@@ -1294,7 +1294,7 @@ ORG_03CB:
 IPLPRN:
         push    bc
         call    LD_TEXT_ADDR
-IPLPRN_1
+IPLPRN_1:
         ld      a, (de)
         or      a
         jr      z, IPLPTC_EXIT          ; メモリ足りないので後処理を共用している
@@ -1411,7 +1411,7 @@ IPL_CMT_1:
         ; IPL終了
         ld      bc, IOIPLOF
         jp      REDIREC                 ; IPL終了
-IPL_CMT_END
+IPL_CMT_END:
 
 
 ; CMTからのインフォメーションブロックの読込み
