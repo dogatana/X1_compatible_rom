@@ -81,6 +81,18 @@
 ; 0ff86h : テキスト色
 ; 0ff87h : ドライブ番号
 
+; 画面幅
+#if !exists WIDTH
+WIDTH		equ	40
+#endif
+
+#if WIDTH == 40
+CRTC_PARAM	equ	PARM40
+#elif WIDTH == 80
+CRTC_PARAM	equ	PARM80
+#endif
+
+
 ; ワークエリアアドレス
 
 WRKTOP		equ	0ff80h		; ワークエリアの先頭アドレス
@@ -176,7 +188,8 @@ INIT_WORK_1:
 INIT_WORK_END:
 
 	ld	sp, 0			; ずれたので再設定
-	ld	hl, PARM40		; CRTCをWIDTH40で初期化
+	; ld	hl, PARM40		; CRTCをWIDTH40で初期化
+	ld	hl, CRTC_PARAM		; CRTCをWIDTHに応じて初期化
 
 	; 8255を初期化 (インライン展開済み)
 	; 7バイト
@@ -995,7 +1008,7 @@ TXT_LTNL:
 	push	hl
 
 	; X座標を得る(40で割った余り)
-	ld	de, 40
+	ld	de, WIDTH		; 40
 	or	a
 TXT_LTNL_1:
 	sbc	hl, de
@@ -1023,7 +1036,7 @@ TXT_LTNL_3:
 	ld	a, h
 	pop	bc
 
-	ld	hl, 40 * 24		; 最終行
+	ld	hl, WIDTH * 24		; 最終行
 	jr	TXT_LTNL_2
 TXT_LTNL_END:
 
@@ -1082,10 +1095,10 @@ TXT_ISLAST:
 
 	ld	hl, (TXTCUR)
 	ld	a, h
-	cp	HIGH(40 * 24)
+	cp	HIGH(WIDTH * 24)
 	jr	nz, TXT_ISLAST_1
 	ld	a, l
-	cp	LOW(40 * 24)
+	cp	LOW(WIDTH * 24)
 	jr	c, TXT_ISLAST_1
 
 	; 最終行だった
@@ -1107,7 +1120,7 @@ TXT_SCROLL:
 	ld	bc, IOTEXT		; 転送先
 	exx				; →裏
 	push	bc
-	ld	bc, IOATTR + 40		; 転送元
+	ld	bc, IOATTR + WIDTH	; 転送元
 
 TXT_SCROLL_1:
 	in	a, (c)			; アトリビュート読出し
@@ -1128,10 +1141,10 @@ TXT_SCROLL_1:
 
 	exx				; →裏
 	ld	a, b			; 転送範囲チェック
-	cp	HIGH(IOATTR + 40 * 25)
+	cp	HIGH(IOATTR + WIDTH * 25)
 	jr	nz, TXT_SCROLL_1
 	ld	a, c
-	cp	LOW(IOATTR + 40 * 25)
+	cp	LOW(IOATTR + WIDTH * 25)
 	jr	nz, TXT_SCROLL_1
 
 	; 転送ループ終了
@@ -1144,7 +1157,7 @@ TXT_SCROLL_1:
 	ld	a, HIGH(TEXT_STD)
 	call	TXT_SCROLL_2		; テキストで実行
 	ld	a, LOW(TEXT_STD)
-	ld	bc, IOATTR + 40 * 24	; アトリビュートで実行
+	ld	bc, IOATTR + WIDTH * 24	; アトリビュートで実行
 TXT_SCROLL_2:
 	out	(c), a
 	inc	c
@@ -2274,10 +2287,10 @@ DATA_TOP:
 ; 表示メッセージ
 ; VRAMオフセット(2バイト), "メッセージ本体", 終端0
 MSG_WELCOME:
-	dw	40*23+8
+	dw	WIDTH*23+8
 	db	"X1 compatible IPL 0.7.2", 0
 MSG_ERROR:
-	dw	40
+	dw	WIDTH
 	db	"Device error", 0
 MSG_WAITING:
 	dw	0
@@ -2292,31 +2305,31 @@ MSG_LOADING:
 	dw	0
 	db	"IPL is loading ", 0
 MSG_MISSING:
-	dw	40
+	dw	WIDTH
 	db	"Program not found", 0
 MSG_MENU1:
 	dw	9
 	db	"Make Your device ready", 0
 MSG_MENU2:
-	dw	40*2+2
+	dw	WIDTH*2+2
 	db	"Press selected key to start driving:", 0
 MSG_MENU3:
-	dw	40*4+11
+	dw	WIDTH*4+11
 	db	"0-3:FDD", 0
 MSG_MENU4:
-	dw	40*5+13
+	dw	WIDTH*5+13
 	db	"C:CMT", 0
 MSG_MENU5:
-	dw	40*6+13
+	dw	WIDTH*6+13
 	db	"R:ROM", 0
 MSG_MENU6:
-	dw	40*7+13
+	dw	WIDTH*7+13
 	db	"E:EMM", 0
 MSG_MENU7:
-	dw	40*8+13
+	dw	WIDTH*8+13
 	db	"M:Mon", 0
 MSG_MENU8:
-	dw	40*9+13
+	dw	WIDTH*9+13
 	db	"#:RAM", 0
 MSG_END:
 
