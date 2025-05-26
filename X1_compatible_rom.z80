@@ -81,15 +81,16 @@
 ; 0ff86h : テキスト色
 ; 0ff87h : ドライブ番号
 
-; 画面幅
-#if !exists WIDTH
-WIDTH		equ	40
-#endif
-
-#if WIDTH == 40
+; 画面幅設定、CRTC パラメータ切替
+#if exists TURBO
+WIDTH		equ	80
+CRTC_PARAM	equ	PARAM_TURBO
+#elif WIDTH == 40
 CRTC_PARAM	equ	PARM40
 #elif WIDTH == 80
 CRTC_PARAM	equ	PARM80
+#else
+; ここはエラー
 #endif
 
 
@@ -188,11 +189,11 @@ INIT_WORK_1:
 INIT_WORK_END:
 
 	ld	sp, 0			; ずれたので再設定
-	; ld	hl, PARM40		; CRTCをWIDTH40で初期化
 	ld	hl, CRTC_PARAM		; CRTCをWIDTHに応じて初期化
 
 	; 8255を初期化 (インライン展開済み)
 	; 7バイト
+
 INIT_8255:
 	ld	bc, IO8255L
 	ld	a, 82h			; ポートBのみ入力
@@ -215,8 +216,15 @@ INIT_CRTC_1:
 	dec	a
 	jp	p, INIT_CRTC_1
 
+#if exists TURBO
+	ld	bc, 1a03h + 0100h
+	outi
+	ld	bc, 1fd0h + 0100h
+	outi
+#else
 	ld	bc, IO8255C + 100h
 	outi
+#endif
 INIT_CRTC_END:
 
 	call	CLR_PALET
@@ -1390,8 +1398,9 @@ ST_CUR_ADDR_END:
 ; ここまでで1KB
 ; ----------------------------------------------------------
 
+#if ! exists TURBO
 	org	0400h
-
+#endif
 ; ----------------------------------------------------------
 ; CMT関連ルーチン
 ; ----------------------------------------------------------
@@ -2346,6 +2355,16 @@ MSG_ADDR_MENU:
 	dw	MSG_MENU7
 	dw	MSG_MENU8
 
+#if exists TURBO
+; X1 Turbo 用 CRTC初期化パラメータ
+PARAM_TURBO:
+	db	00h, 00h, 00h, 00h
+	db      0fh, 00h, 1ah, 19h, 00h
+	db      1bh, 88h, 59h, 50h, 6bh
+
+	db      0ch
+	db      03h
+#else
 ; WIDTH40とWIDTH80のCRTC初期化パラメータ
 ; レジスタR13から逆順にR0までと，1a02h(8255 ポートC)に設定する値
 ; 28バイト
@@ -2353,6 +2372,7 @@ PARM40: db	0, 0, 0, 0, 7, 0, 28, 25, 2, 31, 52, 45, 40, 55
 	db	40h
 PARM80: db	0, 0, 0, 0, 7, 0, 28, 25, 2, 31, 56, 89, 80, 111
 	db	00h
+#endif
 
 DATA_END:
 
