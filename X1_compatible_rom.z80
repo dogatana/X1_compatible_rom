@@ -967,7 +967,11 @@ CLR_VRAM_ALL_END:
 ; レジスタ破壊 af bc hl
 ; 5バイト
 CLR_VRAM_TOP:
+#if exists TURBO
+	ld	a, 7			; 2 => 7 へ変更
+#else
 	ld	a, 2
+#endif
 CLR_VRAM_TOP_1:
 	ld	hl, TEXT_STD
 	;jr	 CLR_VRAM		; 次のルーチンなので省略
@@ -989,11 +993,15 @@ CLR_VRAM_1:				; テキストを256バイト分クリア
 	jr	nz, CLR_VRAM_1
 	res	BIT_ATTR_TEXT, b	; アトリビュートアドレスに変換
 					; 例えば 30aah → 20aah
+#if exists TURBO
+	call	CLR_ATTR_AND_KANJI	; ATTR & 漢字VRAM クリア
+#else
 CLR_VRAM_2:				; アトリビュートを256バイト分クリア
 	out	(c), l
 	inc	c
 	jr	nz, CLR_VRAM_2
 	set	BIT_ATTR_TEXT, b	; テキストアドレスに変換
+#endif
 	inc	b
 	dec	a
 	jr	nz, CLR_VRAM_1		; 256*aバイト分のループ
@@ -1209,8 +1217,12 @@ KBHIT_END:
 ;   a : KEYコード
 ; レジスタ破壊 af
 ; 15バイト
-ORG_038A:
+#if exists TURBO
+	org	  038ah
+#else
 	; org	  038ah
+#endif
+ORG_038A:
 IPLKEY:
 	push	bc
 
@@ -2295,7 +2307,9 @@ PROGRAM_LAST:
 ; データ領域
 ; 計320バイト
 ; ----------------------------------------------------------
+#if !exists TURBO
 	org	06c0h
+#endif
 DATA_TOP:
 
 ; 表示メッセージ
@@ -2383,7 +2397,29 @@ PARM80: db	0, 0, 0, 0, 7, 0, 28, 25, 2, 31, 56, 89, 80, 111
 DATA_END:
 
 	; ここに9バイトあき
+
+#if exists TURBO
+CLR_ATTR_AND_KANJI:
+CLR_VRAM_2:				; アトリビュートを256バイト分クリア
+	out	(c), l
+	inc	c
+	jr	nz, CLR_VRAM_2
+	set	BIT_ATTR_TEXT, b	; テキストアドレスに変換
+
+	set	3, b			; 漢字VRAM
+	push	af
+	xor	a
+.loop
+	out	(c), a
+	inc	c
+	jr	nz, .loop
+	pop	af
+	res	3, b
+	ret
+#else
 	nop
+#endif
+
 
 ; ----------------------------------------------------------
 ; ここまでで2KB
