@@ -194,12 +194,13 @@ INIT_WORK_END:
 	; 8255を初期化 (インライン展開済み)
 	; 7バイト
 
+#if !exists TURBO
 INIT_8255:
 	ld	bc, IO8255L
 	ld	a, 82h			; ポートBのみ入力
 	out	(c), a
 INIT_8255_END:
-
+#endif
 	; CRTCを初期化 (インライン展開済み)
 	; パラメータ
 	;   hl : 初期化パラメータの先頭アドレス
@@ -218,6 +219,8 @@ INIT_CRTC_1:
 
 #if exists TURBO
 	ld	bc, 1a03h + 0100h
+	outi
+	inc	b
 	outi
 	ld	bc, 1fd0h + 0100h
 	outi
@@ -262,7 +265,9 @@ ERR_LOAD_END:
 
 	; NMIリセットがアドレス066hとなるよう，調整する
 	; ここに3バイトあき
+#if !exists TURBO
 	nop
+#endif
 	db	0, 0
 
 	; 読み込むべきファイルが見つからないエラー (インライン展開済み)
@@ -2362,7 +2367,8 @@ PARAM_TURBO:
 	db      0fh, 00h, 1ah, 19h, 00h
 	db      1bh, 88h, 59h, 50h, 6bh
 
-	db      0ch
+	db	82h	; 8255 初期化
+	db      0ch	; 8255 Port C ビット操作
 	db      03h
 #else
 ; WIDTH40とWIDTH80のCRTC初期化パラメータ
