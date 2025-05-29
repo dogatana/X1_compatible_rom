@@ -56,12 +56,17 @@
 - フォーク元の [X1_compatible_rom](https://github.com/meister68k/X1_compatible_rom) のライセンスに準じます。
 （[CC0](https://creativecommons.org/publicdomain/zero/1.0/deed.ja)）
 
-## 関連リンク・リポジトリ（自作分含む）
+## 関連リンク
 
 - フォーク元リポジトリ [X1_compatible_rom](https://github.com/meister68k/X1_compatible_rom)
 - アセンブラ [AILZ80ASSM](https://github.com/AILight/AILZ80ASM)
 - 武田氏エミュレータ [TAKEDA, toshiya's HOME PAGE](http://takeda-toshiya.my.coocan.jp/)
-- 武田氏エミュレータ修正版 [enhance-TAKEDAs-emulator](https://github.com/dogatana/enhance-TAKEDAs-emulator)
+
+## 関連リポジトリ
+
+- 武田氏エミュレータ修正版 https://github.com/dogatana/enhance-TAKEDAs-emulator
+- X1turbo 漢字用charmap https://github.com/dogatana/x1turbo-charmap
+- X1 エミュレータ用漢字フォント https://github.com/dogatana/x1-emulator-kanji-font
 
 ## 謝辞
 
