@@ -1,5 +1,11 @@
 #  X1 compatible ROM ver 0.7.3 for X1 turbo
 
+## 更新履歴
+
+- 2024/05/29 公開
+- 2024/06/01 issue トラックのためfork元からデタッチ
+
+
 ## はじめに
 
 これは meister68k 氏の GiHub リポジトリ 
