@@ -26,11 +26,10 @@
 
 ##  IPL イメージ
 
-| ファイル名   | 内容                                          |
-| --           | --                                            |
-| IPLROM-40.X1 | オリジナルの X1_compatible_rom.bin と同一内容 |
-| IPLROM-80.X1 | オリジナルの画面構成を 80桁へ変更             |
-| IPLROM.X1T   | X1 turbo 高解像度対応                         |
+| ファイル名 | 内容                                          |
+| --         | --                                            |
+| IPLROM.X1  | オリジナルの X1_compatible_rom.bin と同一内容 |
+| IPLROM.X1T | X1 turbo 高解像度対応                         |
 
 - 確認は武田氏の x1turbo.exe で確認しています。
 
@@ -46,16 +45,15 @@
 
 ## ビルド
 
-- build.cmd （Windows 用）を実行すると上述の 3 つの  IPL イメージを生成します。
+- build.cmd （Windows 用）を実行すると上述の 2 つの  IPL イメージを生成します。
 - 本リポジトリ内の makefile はオリジナルのままのもので使用しません。
 - アセンブラは AILZ80ASM を使用します。
 - コマンドラインからのラベル定義（-dl）でビルドを分けています。
 
-| ターゲット    | -dl 指定 |
-| --            | --       |
-| IPLROM-40.X1  | WIDTH=40 |
-| IPLROM-80.X1  | WIDTH=80 |
-| IPLROM.X1T    | TURBO    |
+| ターゲット | -dl 指定 |
+| --         | --       |
+| IPLROM.X1  | なし     |
+| IPLROM.X1T | TURBO    |
 
 ## ライセンス
 

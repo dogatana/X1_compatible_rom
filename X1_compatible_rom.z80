@@ -82,15 +82,12 @@
 ; 0ff87h : ドライブ番号
 
 ; 画面幅設定、CRTC パラメータ切替
-#if exists TURBO
+#if exists TURBO		; X1turbo 高解像度
 WIDTH		equ	80
 CRTC_PARAM	equ	PARAM_TURBO
-#elif WIDTH == 40
-CRTC_PARAM	equ	PARM40
-#elif WIDTH == 80
-CRTC_PARAM	equ	PARM80
 #else
-; ここはエラー
+WIDTH		equ	40	; オリジナル IPL
+CRTC_PARAM	equ	PARM40
 #endif
 
 
