@@ -176,6 +176,9 @@ IPLBOT:
 	; ワークエリアの初期化 (インライン展開済み)
 	; 11バイト
 INIT_WORK:
+#if exists TURBO
+	call	INIT_WORK_TURBO
+#else
 	ld	sp, WRKTOP + WRKSIZ	; 初期化用の仮設定
 	ld	hl, 0
 	ld	b, WRKSIZ / 2
@@ -183,6 +186,7 @@ INIT_WORK_1:
 	push	hl
 	djnz	INIT_WORK_1
 	; 0以外としたいワーク(たとえばTXTATR)が初期化されていないので注意
+#endif
 INIT_WORK_END:
 
 	ld	sp, 0			; ずれたので再設定
@@ -247,6 +251,9 @@ IPL_LOOP:
 
 	call	IS_DRV_RDY		; IPLDRV(初回はFDD 0)の挿入チェック
 	jr	nc, IPL_LOAD		; 挿入されていれば起動
+#if exists TURBO
+	call	FDD_MOTOR_OFF
+#endif
 
 IPL_LOOP2:
 	call	IPL_MENU		; メニュー表示と入力待ち
@@ -262,10 +269,12 @@ ERR_LOAD_END:
 
 	; NMIリセットがアドレス066hとなるよう，調整する
 	; ここに3バイトあき
-#if !exists TURBO
+#if exists TURBO
+	db	0, 0, 0, 0, 0, 0, 0
+#else
 	nop
-#endif
 	db	0, 0
+#endif
 
 	; 読み込むべきファイルが見つからないエラー (インライン展開済み)
 	; 9バイト
@@ -283,9 +292,11 @@ RST_066H:
 	jr	IPL_LOOP2
 
 
+#if !exists TURBO
 	; ここに8バイトあき
 	nop
 	db	0, 0, 0, 0, 0, 0, 0
+#endif
 
 
 ; パレットの初期化
@@ -509,6 +520,13 @@ CHECK1ST_END:
 ; 38バイト
 IS_DRV_RDY:
 	ld	a, (IPLDRV)
+#if exists TURBO		;初回は FF で、FD0 にすり替える 
+	cp	0ffh
+	jr	nz, .next
+	xor	a
+	ld	(IPLDRV), a
+.next
+#endif
 	cp	12h
 	jp	z, IS_CMT_READY		; CMTの場合
 	cp	4
@@ -2396,6 +2414,29 @@ DATA_END:
 	; ここに9バイトあき
 
 #if exists TURBO
+INIT_WORK_TURBO:
+	ld	hl, WRKTOP
+	ld	b, WRKSIZ
+	xor	a
+.loop
+	ld	(hl), a
+	djnz	.loop
+
+	ld	a, 0ffh
+	ld	(IPLDRV), a	; 初期値を FF へ変更
+	ret
+
+FDD_MOTOR_OFF:			; IPLDRV が FD0-3 なら MOTOR OFF
+	push	bc
+	ld	a, (IPLDRV)
+	cp	4
+	jr	nc, .ret
+	ld	bc, 0ffch
+	out	(c), a
+.ret
+	pop	bc
+	ret
+
 CLR_ATTR_AND_KANJI:
 CLR_VRAM_2:				; アトリビュートを256バイト分クリア
 	out	(c), l
