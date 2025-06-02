@@ -45,8 +45,8 @@
 
 ## ビルド
 
-- build.cmd （Windows 用）を実行すると上述の 2 つの  IPL イメージを生成します。
-- 本リポジトリ内の makefile はオリジナルのままのもので使用しません。
+- make でビルドします。
+- オリジナルの makefile は makefile-original へリネームし、新たに Makefile を作成しています。
 - アセンブラは AILZ80ASM を使用します。
 - コマンドラインからのラベル定義（-dl）でビルドを分けています。
 
