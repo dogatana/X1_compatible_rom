@@ -2322,7 +2322,12 @@ DATA_TOP:
 ; VRAMオフセット(2バイト), "メッセージ本体", 終端0
 MSG_WELCOME:
 	dw	WIDTH*23+8
+#if exists TURBO
+	db	"X1turbo 600x400 IPL 1.0.1", 0
+#else
 	db	"X1 compatible IPL 0.7.2", 0
+#endif
+
 MSG_ERROR:
 	dw	WIDTH
 	db	"Device error", 0
