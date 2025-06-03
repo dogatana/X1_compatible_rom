@@ -1,9 +1,10 @@
-#  X1 compatible ROM ver 0.7.3 for X1 turbo
+#  X1 compatible ROM for X1 turbo
 
 ## 更新履歴
 
-- 2024/05/29 公開
-- 2024/06/01 issue トラックのためfork元からデタッチ
+- 2025/05/29 v1.0.0 公開
+- 2025/06/01 issue トラックのためfork元からデタッチ
+- 2025/06/03 v1.0.1 issue #1, #2 対策。バージョン表示文字列を変更
 
 
 ## はじめに
