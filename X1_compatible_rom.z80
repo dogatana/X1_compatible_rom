@@ -221,6 +221,8 @@ INIT_CRTC_1:
 	outi
 	ld	bc, 1fd0h + 0100h
 	outi
+	;
+	in	a, (0)			; 同時アクセスモードキャンセル
 #else
 	ld	bc, IO8255C + 100h
 	outi
